@@ -1,0 +1,245 @@
+{{/* Hugo Blox Article Grid View - Carousel */}}
+{{ $item := .item }}
+{{ $link := $item.RelPermalink }}
+
+{{ if eq .index 0 }}
+<style>
+.ag-carousel-outer {
+  position: relative;
+  width: 100%;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+.ag-carousel-wrapper {
+  overflow: hidden;
+  width: 100%;
+}
+.ag-carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  transition: transform 0.4s ease;
+  will-change: transform;
+}
+.article-grid-item {
+  flex: 0 0 calc(20% - 1.2rem);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+@media (max-width: 1199px) {
+  .article-grid-item { flex: 0 0 calc(33.333% - 1rem); }
+}
+@media (max-width: 767px) {
+  .article-grid-item { flex: 0 0 calc(85% - 0.5rem); }
+}
+.article-grid-item:hover { transform: scale(1.02); }
+.article-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.article-image-container {
+  overflow: hidden;
+  background-color: #d6eaf5;
+  height: 260px;
+  display: flex;
+  border-radius: 0.5rem;
+  justify-content: center
+}
+.article-image {
+  transition: all 0.3s ease;
+  object-fit: contain !important;
+  height: 100% !important;
+  width: 100%;
+  border-radius: 0.5rem;
+}
+.article-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.375;
+  margin-top: 0.5rem;
+  color: #1a6d98;
+  text-align: center
+}
+.article-title-link {
+  text-decoration: none;
+  color: inherit;
+  background: linear-gradient(to right, rgba(37,137,189,0.3), rgba(37,137,189,0.2));
+  background-size: 0px 10px;
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  transition: background-size 0.5s ease;
+}
+.article-title-link:hover,
+.article-grid-item:hover .article-title-link { background-size: 100% 3px; color: inherit; }
+.article-meta {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #6c757d;
+  font-size: 0.8rem;
+  justify-content: center
+}
+.meta-separator { color: #dee2e6; }
+.ag-nav-btn {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: #2589BD;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(37,137,189,0.25);
+  transition: background 0.2s, opacity 0.2s;
+  opacity: 0.85;
+  line-height: 1;
+  padding: 0;
+}
+.ag-nav-btn:hover { background: #187795; opacity: 1; }
+.ag-nav-btn.ag-disabled { opacity: 0.25; pointer-events: none; }
+.ag-nav-prev { left: -6px; }
+.ag-nav-next { right: -6px; }
+.ag-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 1.25rem;
+}
+.ag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #b0cfe0;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.ag-dot.ag-dot-active { background: #2589BD; transform: scale(1.3); }
+</style>
+
+<div class="ag-carousel-outer" id="ag-carousel-outer">
+  <button class="ag-nav-btn ag-nav-prev" id="ag-prev" aria-label="Previous">&#8592;</button>
+  <button class="ag-nav-btn ag-nav-next" id="ag-next" aria-label="Next">&#8594;</button>
+  <div class="ag-carousel-wrapper">
+    <div class="ag-carousel-track" id="ag-track">
+{{ end }}
+
+  <div class="article-grid-item">
+    <div class="article-card">
+      {{ $resource := partial "functions/get_featured_image.html" $item }}
+      {{ with $resource }}
+        {{ $image := .Resize "960x" }}
+        {{ if ne $image.MediaType.SubType "gif" }}{{ $image = $image.Process "webp" }}{{ end }}
+        <div class="article-image-container">
+          <a href="{{ $link }}" style="display: block; height: 100%;">
+            <img alt="{{ $item.Title | plainify }}"
+                 class="article-image"
+                 decoding="async"
+                 loading="lazy"
+                 src="{{ $image.RelPermalink }}">
+          </a>
+        </div>
+      {{ end }}
+      <div class="flex-grow-1 d-flex flex-column">
+        <h3 class="article-title">
+          <a href="{{ $link }}" class="article-title-link">{{ $item.Title }}</a>
+        </h3>
+        <div class="article-meta">
+          {{ range first 1 ($item.GetTerms "authors") }}
+            <span class="text-truncate">{{ .Page.LinkTitle }}</span>
+            <span class="meta-separator">•</span>
+          {{ end }}
+          <time datetime="{{ time.Format "2006" $item.Date }}">{{ $item.Date | time.Format "2006" }}</time>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{{ if eq .index 0 }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const outer   = document.getElementById('ag-carousel-outer');
+  const track   = document.getElementById('ag-track');
+  const prevBtn = document.getElementById('ag-prev');
+  const nextBtn = document.getElementById('ag-next');
+  if (!track) return;
+
+  const items = track.querySelectorAll('.article-grid-item');
+  const total = items.length;
+  let current = 0;
+
+  const dotsEl = document.createElement('div');
+  dotsEl.className = 'ag-dots';
+  outer.parentNode.insertBefore(dotsEl, outer.nextSibling);
+
+  function visibleCount() {
+    const w = outer.offsetWidth;
+    if (w < 768)  return 1;
+    if (w < 1200) return 3;
+    return Math.min(5, total);
+  }
+
+  function itemWidth() {
+    const gap = 24;
+    const vc  = visibleCount();
+    return (outer.offsetWidth - 48 - gap * (vc - 1)) / vc;
+  }
+
+  function buildDots() {
+    dotsEl.innerHTML = '';
+    const pages = Math.ceil(total / visibleCount());
+    for (let i = 0; i < pages; i++) {
+      const d = document.createElement('button');
+      d.className = 'ag-dot' + (i === 0 ? ' ag-dot-active' : '');
+      d.setAttribute('aria-label', 'Page ' + (i + 1));
+      d.addEventListener('click', () => goTo(i * visibleCount()));
+      dotsEl.appendChild(d);
+    }
+  }
+
+  function updateDots() {
+    const page = Math.floor(current / visibleCount());
+    dotsEl.querySelectorAll('.ag-dot').forEach((d, i) =>
+      d.classList.toggle('ag-dot-active', i === page));
+  }
+
+  function goTo(index) {
+    const vc  = visibleCount();
+    const max = Math.max(0, total - vc);
+    current   = Math.max(0, Math.min(index, max));
+    track.style.transform = 'translateX(-' + (current * (itemWidth() + 24)) + 'px)';
+    prevBtn.classList.toggle('ag-disabled', current === 0);
+    nextBtn.classList.toggle('ag-disabled', current >= max);
+    updateDots();
+  }
+
+  function resize() {
+    const iw = itemWidth();
+    items.forEach(el => { el.style.flexBasis = iw + 'px'; el.style.minWidth = iw + 'px'; });
+    buildDots();
+    goTo(current);
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - visibleCount()));
+  nextBtn.addEventListener('click', () => goTo(current + visibleCount()));
+
+  let touchStartX = 0;
+  track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? visibleCount() : -visibleCount()));
+  });
+
+  window.addEventListener('resize', resize);
+  resize();
+});
+</script>
+{{ end }}

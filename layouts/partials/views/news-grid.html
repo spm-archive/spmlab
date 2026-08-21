@@ -1,0 +1,104 @@
+{{/* Hugo Blox News Grid View */}}
+{{/* Save as: layouts/partials/views/news-grid.html */}}
+
+{{ $item := .item }}
+{{ $link := $item.RelPermalink }}
+
+{{ if eq .index 0 }}
+<style>
+.news-grid-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+@media (max-width: 1199px) {
+  .news-grid-container { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 767px) {
+  .news-grid-container { grid-template-columns: 1fr; }
+}
+
+.news-grid-item {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.news-grid-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+}
+
+.news-image-container {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+.news-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+.news-grid-item:hover .news-image-container img {
+  transform: scale(1.05);
+}
+
+.news-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.news-date {
+  font-size: 0.82rem;
+  color: #888;
+  margin-bottom: 8px;
+}
+.news-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0;
+}
+.news-title a {
+  text-decoration: none;
+  color: #1a6d98;
+}
+.news-title a:hover { color: #187795; }
+</style>
+
+<div class="news-grid-container">
+{{ end }}
+
+<div class="news-grid-item">
+  {{ $resource := partial "functions/get_featured_image.html" $item }}
+  {{ with $resource }}
+    {{ $image := .Resize "800x" }}
+    {{ if ne $image.MediaType.SubType "gif" }}{{ $image = $image.Process "webp" }}{{ end }}
+    <div class="news-image-container">
+      <a href="{{ $link }}">
+        <img alt="{{ $item.Title | plainify }}"
+             loading="lazy"
+             src="{{ $image.RelPermalink }}">
+      </a>
+    </div>
+  {{ end }}
+  <div class="news-body">
+    <p class="news-date">{{ $item.Date | time.Format "Jan 2, 2006" }}</p>
+    <h3 class="news-title">
+      <a href="{{ $link }}">{{ $item.Title }}</a>
+    </h3>
+  </div>
+</div>
+
+{{ if eq .last true }}
+</div>
+{{ end }}

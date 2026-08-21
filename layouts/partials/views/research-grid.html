@@ -1,0 +1,175 @@
+{{/* Hugo Blox Research Grid View */}}
+{{/* Save as: layouts/partials/views/research-grid.html */}}
+
+{{ $item := .item }}
+{{ $link := $item.RelPermalink }}
+
+{{ if eq .index 0 }}
+<style>
+.isotope.projects-container {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 16px !important;
+  height: auto !important;
+  position: relative !important;
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 767px) {
+  .isotope.projects-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  /* Reset bottom row centering on mobile */
+  .isotope.projects-container .col-12.isotope-item:nth-child(4),
+  .isotope.projects-container .col-12.isotope-item:nth-child(5) {
+    grid-column: auto !important;
+    margin-left: 0 !important;
+  }
+}
+@media (max-width: 480px) {
+  .isotope.projects-container {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Center bottom row on desktop (3+2 layout) 
+.isotope.projects-container .col-12.isotope-item:nth-child(4) {
+  grid-column: 1 / 2;
+  margin-left: calc(50% + 10px);
+}
+.isotope.projects-container .col-12.isotope-item:nth-child(5) {
+  grid-column: 2 / 3;
+  margin-left: calc(50% + 10px);
+}
+*/
+/* Override isotope inline positioning */
+.isotope.projects-container .col-12.isotope-item {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  padding: 0 !important;
+}
+
+/* Neutralise wrapper div on first item */
+.isotope.projects-container .research-grid-container {
+  display: contents !important;
+}
+
+/* Card styles */
+.research-grid-item {
+  background: #387188;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.research-grid-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+}
+.research-image-container {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.research-image-container img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  transition: transform 0.4s ease;
+}
+.research-grid-item:hover .research-image-container img {
+  transform: scale(1.05);
+}
+.research-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 8px;
+}
+.research-title {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0;
+  color: #ffffff;
+}
+.research-title a {
+  text-decoration: none;
+  color: inherit;
+}
+.research-title a:hover { color: #60c0e0; }
+.research-summary {
+  font-size: 0.85rem;
+  color: #c5cedd;
+  line-height: 1.5;
+  margin: 0;
+  flex-grow: 1;
+}
+.research-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.research-tag {
+  font-size: 0.6rem;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #2a3a4a;
+  color: #c5cedd;
+  border: 1px solid #3a5a7a;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.research-tag:hover {
+  background: #3a5a7a;
+  color: #ffffff;
+}
+</style>
+{{ end }}
+
+<div class="research-grid-item">
+  {{ $resource := partial "functions/get_featured_image.html" $item }}
+  {{ with $resource }}
+    {{ $image := .Resize "800x" }}
+    {{ if ne $image.MediaType.SubType "gif" }}{{ $image = $image.Process "webp" }}{{ end }}
+    <div class="research-image-container">
+      <a href="{{ $link }}">
+        <img alt="{{ $item.Title | plainify }}"
+             loading="lazy"
+             src="{{ $image.RelPermalink }}">
+      </a>
+    </div>
+  {{ end }}
+  <div class="research-body">
+    <h3 class="research-title">
+      <a href="{{ $link }}">{{ $item.Title }}</a>
+    </h3>
+    {{ with $item.Params.summary }}
+    <p class="research-summary">{{ . }}</p>
+    {{ end }}
+    {{ with $item.GetTerms "tags" }}
+    <div class="research-tags">
+      {{ range . }}
+      <a href="{{ .RelPermalink }}" class="research-tag">{{ .LinkTitle }}</a>
+      {{ end }}
+    </div>
+    {{ end }}
+  </div>
+</div>

@@ -1,0 +1,101 @@
+// ─── Color scheme: Ocean Blue & Teal ───────────────────────────────────────
+
+.navbar {
+  background: #d6eaf5 !important;
+  min-height: 100px !important;
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
+
+  .navbar-brand img {
+    max-height: 100px !important;
+  }
+
+  .navbar-nav {
+    margin-left: auto !important;
+  }
+}
+
+a {
+  color: #1a2a35;
+  &:hover { color: #187795; }
+}
+
+h1, h2, h3 {
+  color: #1a2a35;
+}
+
+.btn-primary, a.btn {
+  background-color: #387188 !important;
+  border-color: #387188 !important;
+  color: #cbd2dd !important;
+  &:hover {
+    background-color: #187795 !important;
+    border-color: #187795 !important;
+    color: #a8b2c1 !important;
+  }
+}
+
+.btn-outline-primary {
+  color: #2589BD !important;
+  border-color: #2589BD !important;
+  &:hover {
+    background-color: #2589BD !important;
+    border-color: #2589BD !important;
+    color: #a8b2c1!important;
+  }
+}
+
+section.home-section {
+  background-color: #d6eaf5 !important;
+}
+
+
+#about_banner .hero-media img{
+ 
+    max-width: 400px !important;
+    width: 90% !important;
+    display: block !important;
+    margin: 0 auto !important;
+    height: auto !important;
+}
+#about_banner ul {
+  list-style: none;
+  padding-left: 16px;
+}
+#about_banner ul li::before {
+  content: "●";
+  color: #387188;
+  font-size: 0.6em;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+#about_banner .row {
+  align-items: center !important;
+}
+
+// display people page in a single table without a row for category
+.people-widget .col-md-12 {
+  display: none !important;
+}
+// control the team image on top of people page
+#people_banner .hero-media {
+  max-width: 100% !important;
+  flex: 0 0 100% !important;
+  text-align: center !important;
+
+  img {
+    border-radius: 12px !important;
+    max-width: 900px !important;
+    width: 90% !important;
+    display: block !important;
+    margin: 0 auto !important;
+    height: auto !important;
+  }
+}
+#people_banner .col-md-6:first-child {
+  display: none !important;
+}
+// change shape of image in people page
+.avatar-square {
+  border-radius: 16px !important;
+}
